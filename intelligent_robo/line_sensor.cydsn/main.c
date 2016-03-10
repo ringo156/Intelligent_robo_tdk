@@ -54,32 +54,34 @@ int main()
     for(;;)
     {
         /* Place your application code here. */
+        /*
         ADC_SAR_Seq_1_IsEndConversion(ADC_SAR_Seq_1_WAIT_FOR_RESULT);
         a = ADC_SAR_Seq_1_GetResult16(0);
-        /*8個同時に読んでblack/whiteの判別をする
+        */
+        //8個同時に読んでblack/whiteの判別をする
         for(i=0;i<8;i++)
         {
             ADC_SAR_Seq_1_IsEndConversion(ADC_SAR_Seq_1_WAIT_FOR_RESULT);
             val[i]=ADC_SAR_Seq_1_GetResult16(i);
-            if(val[i]>100)//black
+            if(val[i]<150)//black
             {
-                x |= 1 < i;
+                x |= 1 << i;
                 //iビット目を1にする
             }
             else//white
             {
                 x &= ~(1 << i);
                 //iビット目を0にする
-            }
+            }        
+            sprintf(value, "x=%d\n", x);
+            UART_1_PutString(value);
         }
-        */
         
-        sprintf(value, "a=%lu\n", a);
-        UART_1_PutString(value);
-        /*
-        tx = line.slave.Trans;
-        UART_1_PutChar(tx);
-        */
+        for(i=0;i<8;i++)
+        {
+            sprintf(value, "%d=%lu\n", i,val[i]);
+            UART_1_PutString(value);
+        }
     }
 }
 
