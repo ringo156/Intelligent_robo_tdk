@@ -16,6 +16,8 @@
 void I2C_Color_init(void);
 void I2C_LCD_Position(uint8 row, uint8 column);
 void I2C_LCD_Init(void);
+void Motor_Right(int16 speed);
+void Motor_Left(int16 speed);
 
 int main()
 {
@@ -30,7 +32,9 @@ int main()
     I2C_1_Start();
     I2C_LCD_1_Start();
     I2C_LCD_Init();
-    Debug_LED_Write(1);
+    Motor_Right(0);
+    Motor_Left(0);
+    Debug_LED_Write(0);
     CyDelay(1000);
     sprintf(value, "PSoC5 Start");
     I2C_LCD_Position(0u,0u);
@@ -39,15 +43,75 @@ int main()
     {
         /* Place your application code here. */
         psData = PS2_Controller_get();
-        if(psData.CIRCLE)
+        
+        if(psData.UP)
         {
-            Debug_LED_Write(0);
+            Motor_Right(200);
+            Motor_Left(200);
         }
 
-        //Debug_LED_Write(1);
+        else if(psData.DOWN)
+        {
+            Motor_Right(-150);
+            Motor_Left(-150);
+        }
+        else if(psData.LEFT)
+        {
+            Motor_Right(200);
+            Motor_Left(0);
+        }
+        else if(psData.RIGHT)
+        {
+            Motor_Right(0);
+            Motor_Left(200);
+        }
+        else
+        {
+            Motor_Right(0);
+            Motor_Left(0);
+        }
     }
 }
 
+void Motor_Right(int16 speed){
+    
+    
+    if((0<speed)&&(speed<255))
+    {
+        Motor_PWM_a_WriteCompare1(0);
+        Motor_PWM_a_WriteCompare2(speed);   
+    }
+    else if((-255<speed)&&(speed<0))
+    {
+        Motor_PWM_a_WriteCompare1(-speed);
+        Motor_PWM_a_WriteCompare2(0);
+    }
+    else
+    {
+        Motor_PWM_a_WriteCompare1(0);
+        Motor_PWM_a_WriteCompare2(0);
+    }
+}
+
+void Motor_Left(int16 speed){
+    
+    
+    if((0<speed)&&(speed<255))
+    {
+        Motor_PWM_b_WriteCompare1(0);
+        Motor_PWM_b_WriteCompare2(speed);   
+    }
+    else if((-255<speed)&&(speed<0))
+    {
+        Motor_PWM_b_WriteCompare1(-speed);
+        Motor_PWM_b_WriteCompare2(0);
+    }
+    else
+    {
+        Motor_PWM_b_WriteCompare1(0);
+        Motor_PWM_b_WriteCompare2(0);
+    }
+}
 
 void I2C_Color_init(void)
 {
