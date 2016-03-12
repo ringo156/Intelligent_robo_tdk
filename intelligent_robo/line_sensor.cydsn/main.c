@@ -59,6 +59,7 @@ int main()
         a = ADC_SAR_Seq_1_GetResult16(0);
         */
         //8個同時に読んでblack/whiteの判別をする
+        //右から0番目
         for(i=0;i<8;i++)
         {
             ADC_SAR_Seq_1_IsEndConversion(ADC_SAR_Seq_1_WAIT_FOR_RESULT);
