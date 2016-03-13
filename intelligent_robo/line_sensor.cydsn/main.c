@@ -15,6 +15,8 @@
 #define BLACK   1
 #define WHITE   0
 
+uint8 g_timeerFlag = 0;
+
 union Slave{
     uint8 Trans;
     struct
@@ -34,23 +36,32 @@ typedef struct{
     union Slave slave;
 }Line;
 
+CY_ISR(UART_isr)
+{
+    g_timeerFlag = 1;
+}
 
 int main()
 {
+    char x[1];
     uint32 a,val[8];
-    uint8 i,x=0,tx=0;
+    uint8 i,tx=100;
     char value[40];
     //Line line;
     
     CyGlobalIntEnable; /* Enable global interrupts. */
 
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
-    UART_1_Start();
+    UART_2_Start();
+    Timer_1_WriteCounter(1);
+    Timer_1_Start();
+    Timer_isr_StartEx(UART_isr);
     ADC_SAR_Seq_1_Start();
     ADC_SAR_Seq_1_StartConvert();
     
-    sprintf(value, "HelloWorld\n");
-    UART_1_PutString(value);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+    
+    sprintf(value, "Hello\n");
+    UART_2_UartPutString(value);
     for(;;)
     {
         /* Place your application code here. */
@@ -60,28 +71,39 @@ int main()
         */
         //8個同時に読んでblack/whiteの判別をする
         //右から0番目
-        for(i=0;i<8;i++)
+        if(g_timeerFlag == 1)
         {
-            ADC_SAR_Seq_1_IsEndConversion(ADC_SAR_Seq_1_WAIT_FOR_RESULT);
-            val[i]=ADC_SAR_Seq_1_GetResult16(i);
-            if(val[i]<150)//black
+            
+            for(i=0;i<8;i++)
             {
-                x |= 1 << i;
-                //iビット目を1にする
+                ADC_SAR_Seq_1_IsEndConversion(ADC_SAR_Seq_1_WAIT_FOR_RESULT);
+                val[i]=ADC_SAR_Seq_1_GetResult16(i);
+                
+                if(val[i]<150)//black
+                {
+                    tx |= 1 << i;
+                    //iビット目を1にする
+                }
+                else//white
+                {
+                    tx &= ~(1 << i);
+                    //iビット目を0にする
+                }
+                
+                //sprintf(value, "x=%d\n", tx);
+                //UART_2_UartPutString(value);
+                }
+            
+            UART_2_UartPutChar((uint8)(tx));
+            /*
+            for(i=0;i<8;i++)
+            {
+                sprintf(value, "%d=%lu x=%d\n", i,val[i],tx);            
+                UART_2_UartPutString(value);
             }
-            else//white
-            {
-                x &= ~(1 << i);
-                //iビット目を0にする
-            }        
-            sprintf(value, "x=%d\n", x);
-            UART_1_PutString(value);
-        }
-        
-        for(i=0;i<8;i++)
-        {
-            sprintf(value, "%d=%lu\n", i,val[i]);
-            UART_1_PutString(value);
+            */
+            
+            g_timeerFlag = 0;
         }
     }
 }

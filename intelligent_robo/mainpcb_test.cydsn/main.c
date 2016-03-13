@@ -21,6 +21,7 @@ void Motor_Left(int16 speed);
 
 int main()
 {
+    uint16 x=0, i=0;
     char value[20];
     PS2Controller psData;
     CyGlobalIntEnable; /* Enable global interrupts. */
@@ -29,6 +30,7 @@ int main()
     Motor_PWM_a_Start();
     Motor_PWM_b_Start();
     PS2_Start();
+    UART_Line_Sensor_Start();
     I2C_1_Start();
     I2C_LCD_1_Start();
     I2C_LCD_Init();
@@ -36,12 +38,18 @@ int main()
     Motor_Left(0);
     Debug_LED_Write(0);
     CyDelay(1000);
-    sprintf(value, "PSoC5 Start");
     I2C_LCD_Position(0u,0u);
-    I2C_LCD_1_PrintString(value);
+    I2C_LCD_1_PrintString("PSoC5 Start");
     for(;;)
     {
         /* Place your application code here. */
+        x = (uint8)UART_Line_Sensor_GetChar();
+        sprintf(value, "%x", x);
+        I2C_LCD_Position(1u, 0u);
+        I2C_LCD_1_PrintString(value);
+        sprintf(value, "x=%d\n", x);
+        UART_Line_Sensor_PutString(value);
+        
         psData = PS2_Controller_get();
         
         if(psData.UP)
