@@ -43,9 +43,11 @@ CY_ISR(UART_isr)
 
 int main()
 {
-    char x[1];
-    uint32 a,val[8];
-    uint8 i,tx=100;
+    uint32 val[8]  = {};
+    uint32 gray[8] = {};
+    uint32 min[8]  = {};
+    uint32 max[8]  = {};
+    uint8 i,tx=0;
     char value[40];
     //Line line;
     
@@ -56,9 +58,8 @@ int main()
     Timer_1_WriteCounter(1);
     Timer_1_Start();
     Timer_isr_StartEx(UART_isr);
-    ADC_SAR_Seq_1_Start();
-    ADC_SAR_Seq_1_StartConvert();
-    
+    //ADC_SAR_Seq_1_Start();
+    //ADC_SAR_Seq_1_StartConvert();
     
     sprintf(value, "Hello\n");
     UART_2_UartPutString(value);
@@ -73,13 +74,22 @@ int main()
         //右から0番目
         if(g_timeerFlag == 1)
         {
-            
             for(i=0;i<8;i++)
             {
                 ADC_SAR_Seq_1_IsEndConversion(ADC_SAR_Seq_1_WAIT_FOR_RESULT);
                 val[i]=ADC_SAR_Seq_1_GetResult16(i);
+                if(val[i]<min[i])
+                {
+                    min[i] = val[i];
+                }
+                if(val[i]>max[i])
+                {
+                    max[i] = val[i];
+                }
+                //中間値の計算
+                gray[i] = (max[i] + min[i])/2;
                 
-                if(val[i]<150)//black
+                if(val[i]<gray[i])//black
                 {
                     tx |= 1 << i;
                     //iビット目を1にする
@@ -92,8 +102,9 @@ int main()
                 
                 //sprintf(value, "x=%d\n", tx);
                 //UART_2_UartPutString(value);
-                }
+            }
             
+            tx++;
             UART_2_UartPutChar((uint8)(tx));
             /*
             for(i=0;i<8;i++)
@@ -102,7 +113,6 @@ int main()
                 UART_2_UartPutString(value);
             }
             */
-            
             g_timeerFlag = 0;
         }
     }
