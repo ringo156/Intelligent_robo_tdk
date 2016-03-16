@@ -44,10 +44,9 @@ CY_ISR(UART_isr)
 int main()
 {
     uint32 val[8]  = {};
-    uint32 min[8]  = {};
-    uint32 max[8]  = {};
-    uint32 x[8]    = {180,180,180,200,150,150,170,170};
-                     //a
+    uint32 min[8]  = {130,100,130,180,160,170,140,130};
+    uint32 max[8]  = {150,130,160,190,180,190,160,160};
+                     //a ~~~ h
     uint8 i,tx=0;
     char value[40];
     //Line line;
@@ -67,10 +66,7 @@ int main()
     for(;;)
     {
         /* Place your application code here. */
-        /*
-        ADC_SAR_Seq_1_IsEndConversion(ADC_SAR_Seq_1_WAIT_FOR_RESULT);
-        a = ADC_SAR_Seq_1_GetResult16(0);
-        */
+        
         //8個同時に読んでblack/whiteの判別をする
         //右から0番目
         if(g_timeerFlag == 1)
@@ -79,19 +75,16 @@ int main()
             {
                 ADC_SAR_Seq_1_IsEndConversion(ADC_SAR_Seq_1_WAIT_FOR_RESULT);
                 val[i]=ADC_SAR_Seq_1_GetResult16(i);
-                if(val[i]<x[i])//black
+                if(val[i] < min[i])//black
                 {
                     //iビット目を1にする
                     tx |= 1 << i;
                 }
-                else//white
+                else if(val[i] > max[i])//white
                 {
                     tx &= ~(1 << i);
                     //iビット目を0にする
                 }
-                
-                //sprintf(value, "x=%d\n", tx);
-                //UART_2_UartPutString(value);
             }
             
             UART_2_UartPutChar(tx);
@@ -99,11 +92,13 @@ int main()
             /*
             //デバッグ
             for(i=0;i<8;i++)
-            {
+            { 
+            i = 2;
                 sprintf(value, "%d=%lu x=%d\n", i,val[i],tx);            
                 UART_2_UartPutString(value);
             }
             */
+            
             g_timeerFlag = 0;
         }
     }

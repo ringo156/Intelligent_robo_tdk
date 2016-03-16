@@ -51,6 +51,8 @@ int main()
     CyGlobalIntEnable; 
     CyDelay(500);
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
+    
+    PWM_Servo_Start();
     PWM_Motor_a_Start();
     PWM_Motor_b_Start();    
     Motor_Right(0);
@@ -61,7 +63,6 @@ int main()
     I2C_1_Start();
     I2C_LCD_1_Start();
     I2C_LCD_Init();
-
 
     CyDelay(1000);
     I2C_LCD_Position(0u,0u);
