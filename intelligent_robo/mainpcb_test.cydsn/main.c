@@ -13,6 +13,25 @@
 #include <stdio.h>
 #include "PS2_Controller.h"
 
+union Slave{
+    uint8 Trans;
+    struct
+    {
+        uint8 a     : 1;//right
+        uint8 b     : 1;
+        uint8 c     : 1;
+        uint8 d     : 1;
+        uint8 e     : 1;
+        uint8 f     : 1;
+        uint8 g     : 1;
+        uint8 h     : 1;//left
+    }status;
+};
+
+typedef struct{
+    union Slave slave;
+}Line;
+
 void I2C_Color_init(void);
 void I2C_LCD_Position(uint8 row, uint8 column);
 void I2C_LCD_Init(void);
@@ -24,6 +43,7 @@ int main()
     uint16 x=0, i=0;
     char value[20];
     PS2Controller psData;
+    Line line;
     CyGlobalIntEnable; /* Enable global interrupts. */
     CyDelay(500);
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
@@ -32,31 +52,43 @@ int main()
     //PS2_Start();
     
     UART_Line_Sensor_Start();
-    //I2C_1_Start();
-    //I2C_LCD_1_Start();
-    //I2C_LCD_Init();
+    I2C_1_Start();
+    I2C_LCD_1_Start();
+    I2C_LCD_Init();
     Motor_Right(0);
     Motor_Left(0);
 
     CyDelay(1000);
-    //I2C_LCD_Position(0u,0u);
-    //I2C_LCD_1_PrintString("PSoC5 Start");
-    x = (uint8)UART_Line_Sensor_GetChar();
+    I2C_LCD_Position(0u,0u);
+    I2C_LCD_1_PrintString("PSoC5 Start");
     for(;;)
     {
         Debug_LED_Write(1);
         /* Place your application code here. */
+        //ラインセンサ受信
         if(UART_Line_Sensor_GetRxBufferSize())
         {
-            x = (uint8)UART_Line_Sensor_GetChar();
-            sprintf(value, "x=%d\n", x);
+            line.slave.Trans = (uint8)UART_Line_Sensor_GetChar();
+            sprintf(value, "d=%d e=%d\n", line.slave.status.d, line.slave.status.e);
             UART_Line_Sensor_PutString(value);
         }
         
-        //sprintf(value, "%x", x);
-        //I2C_LCD_Position(1u, 0u);
-        //I2C_LCD_1_PrintString(value);
-       
+        if((line.slave.status.d == 0) && (line.slave.status.e == 0))
+        {
+            Motor_Right(200);
+            Motor_Left(200);
+        }
+        else if((line.slave.status.d == 1) && (line.slave.status.e == 0))
+        {
+            Motor_Right(200);
+            Motor_Left(50);
+        }
+        else if((line.slave.status.d == 0) && (line.slave.status.e == 0))
+        {
+            Motor_Right(50);
+            Motor_Left(200);
+        }
+        
         
         psData = PS2_Controller_get();
         

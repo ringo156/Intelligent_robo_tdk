@@ -158,7 +158,7 @@
     <block name="PWMUDB" BASE="0x0" SIZE="0x0" desc="" visible="true" hidden="false" />
     <register name="Motor_PWM_b__COMPARE1" address="0x4000642A" bitWidth="8" desc="UDB.D0 - Assigned Compare1 Value" hidden="false" />
     <register name="Motor_PWM_b__COMPARE2" address="0x4000643A" bitWidth="8" desc="UDB.D1 - Assigned Compare2 Value" hidden="false" />
-    <register name="Motor_PWM_b_Control_Reg" address="0x4000647A" bitWidth="8" desc="UDB Control Register - Assigned Control Register Value" hidden="false">
+    <register name="Motor_PWM_b_Control_Reg" address="0x40006476" bitWidth="8" desc="UDB Control Register - Assigned Control Register Value" hidden="false">
       <field name="CTRL_ENABLE" from="7" to="7" access="RW" resetVal="" desc="Enable the PWM" />
       <field name="CTRL_CMPMODE2" from="5" to="3" access="RW" resetVal="" desc="Compare mode 2" />
       <field name="CTRL_CMPMODE1" from="2" to="0" access="RW" resetVal="" desc="Compare mode 1" />
@@ -205,6 +205,9 @@
     <block name="IntClock" BASE="0x0" SIZE="0x0" desc="" visible="true" hidden="false" />
     <block name="VirtualMux_1" BASE="0x0" SIZE="0x0" desc="" visible="true" hidden="false" />
     <block name="BUART" BASE="0x0" SIZE="0x0" desc="" visible="true" hidden="false" />
+    <register name="RX_UART_PS2_RX_ADDRESS1" address="0x40006424" bitWidth="8" desc="RX Address1 Register" hidden="false" />
+    <register name="RX_UART_PS2_RX_ADDRESS2" address="0x40006434" bitWidth="8" desc="RX Address2 Register" hidden="false" />
+    <register name="RX_UART_PS2_RX_DATA" address="0x40006444" bitWidth="8" desc="RX Data Register" hidden="false" />
     <register name="RX_UART_PS2_RX_STATUS" address="0x40006467" bitWidth="8" desc="RX status register" hidden="false">
       <field name="UART_PS2_RX_STS_MRKSPC" from="0" to="0" access="R" resetVal="" desc="" />
       <field name="UART_PS2_RX_STS_BREAK" from="1" to="1" access="R" resetVal="" desc="" />
@@ -214,9 +217,6 @@
       <field name="UART_PS2_RX_STS_FIFO_NOTEMPTY" from="5" to="5" access="R" resetVal="" desc="" />
       <field name="UART_PS2_RX_STS_ADDR_MATCH" from="6" to="6" access="R" resetVal="" desc="" />
     </register>
-    <register name="RX_UART_PS2_RX_ADDRESS1" address="0x40006526" bitWidth="8" desc="RX Address1 Register" hidden="false" />
-    <register name="RX_UART_PS2_RX_ADDRESS2" address="0x40006536" bitWidth="8" desc="RX Address2 Register" hidden="false" />
-    <register name="RX_UART_PS2_RX_DATA" address="0x40006546" bitWidth="8" desc="RX Data Register" hidden="false" />
   </block>
   <block name="Motor_b_1" BASE="0x0" SIZE="0x0" desc="" visible="true" hidden="false" />
   <block name="Motor_b_2" BASE="0x0" SIZE="0x0" desc="" visible="true" hidden="false" />
@@ -224,10 +224,7 @@
     <block name="IntClock" BASE="0x0" SIZE="0x0" desc="" visible="true" hidden="false" />
     <block name="VirtualMux_1" BASE="0x0" SIZE="0x0" desc="" visible="true" hidden="false" />
     <block name="BUART" BASE="0x0" SIZE="0x0" desc="" visible="true" hidden="false" />
-    <register name="RX_UART_Line_Sensor_RX_ADDRESS1" address="0x40006425" bitWidth="8" desc="RX Address1 Register" hidden="false" />
-    <register name="RX_UART_Line_Sensor_RX_ADDRESS2" address="0x40006435" bitWidth="8" desc="RX Address2 Register" hidden="false" />
-    <register name="RX_UART_Line_Sensor_RX_DATA" address="0x40006445" bitWidth="8" desc="RX Data Register" hidden="false" />
-    <register name="RX_UART_Line_Sensor_RX_STATUS" address="0x40006466" bitWidth="8" desc="RX status register" hidden="false">
+    <register name="RX_UART_Line_Sensor_RX_STATUS" address="0x40006465" bitWidth="8" desc="RX status register" hidden="false">
       <field name="UART_Line_Sensor_RX_STS_MRKSPC" from="0" to="0" access="R" resetVal="" desc="" />
       <field name="UART_Line_Sensor_RX_STS_BREAK" from="1" to="1" access="R" resetVal="" desc="" />
       <field name="UART_Line_Sensor_RX_STS_PAR_ERROR" from="2" to="2" access="R" resetVal="" desc="" />
@@ -236,7 +233,10 @@
       <field name="UART_Line_Sensor_RX_STS_FIFO_NOTEMPTY" from="5" to="5" access="R" resetVal="" desc="" />
       <field name="UART_Line_Sensor_RX_STS_ADDR_MATCH" from="6" to="6" access="R" resetVal="" desc="" />
     </register>
+    <register name="RX_UART_Line_Sensor_RX_ADDRESS1" address="0x40006526" bitWidth="8" desc="RX Address1 Register" hidden="false" />
+    <register name="RX_UART_Line_Sensor_RX_ADDRESS2" address="0x40006536" bitWidth="8" desc="RX Address2 Register" hidden="false" />
     <register name="TX_UART_Line_Sensor_TX_DATA" address="0x40006544" bitWidth="8" desc="TX Data Register" hidden="false" />
+    <register name="RX_UART_Line_Sensor_RX_DATA" address="0x40006546" bitWidth="8" desc="RX Data Register" hidden="false" />
     <register name="TX_UART_Line_Sensor_TX_STATUS" address="0x40006564" bitWidth="8" desc="TX status register" hidden="false">
       <field name="UART_Line_Sensor_TX_STS_COMPLETE" from="0" to="0" access="R" resetVal="" desc="" />
       <field name="UART_Line_Sensor_TX_STS_FIFO_EMPTY" from="1" to="1" access="R" resetVal="" desc="" />
