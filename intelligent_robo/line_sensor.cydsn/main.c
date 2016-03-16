@@ -44,8 +44,6 @@ CY_ISR(UART_isr)
 int main()
 {
     uint32 val[8]  = {};
-    uint32 fx[8]   = {};
-    uint32 gray[8] = {};
     uint32 min[8]  = {};
     uint32 max[8]  = {};
     uint32 x[8]    = {180,180,180,200,150,150,170,170};
@@ -66,12 +64,6 @@ int main()
     
     sprintf(value, "Hello\n");
     UART_2_UartPutString(value);
-    
-    for(i=0;i<8;i++)
-    {
-        ADC_SAR_Seq_1_IsEndConversion(ADC_SAR_Seq_1_WAIT_FOR_RESULT);
-        fx[i]=ADC_SAR_Seq_1_GetResult16(i);
-    }
     for(;;)
     {
         /* Place your application code here. */
@@ -87,20 +79,7 @@ int main()
             {
                 ADC_SAR_Seq_1_IsEndConversion(ADC_SAR_Seq_1_WAIT_FOR_RESULT);
                 val[i]=ADC_SAR_Seq_1_GetResult16(i);
-                fx[i]=0.9*fx[i]+0.1*val[i];
-                /*
-                if(val[i]<min[i])
-                {
-                    min[i] = val[i];
-                }
-                if(val[i]>max[i])
-                {
-                    max[i] = val[i];
-                }
-                //中間値の計算
-                gray[i] = (max[i] + min[i])/2;
-                */
-                if(fx[i]<x[i])//black
+                if(val[i]<x[i])//black
                 {
                     //iビット目を1にする
                     tx |= 1 << i;

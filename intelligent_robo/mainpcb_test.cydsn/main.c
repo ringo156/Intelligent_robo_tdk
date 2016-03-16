@@ -13,6 +13,9 @@
 #include <stdio.h>
 #include "PS2_Controller.h"
 
+#define BLACK 1
+#define WHITE 0
+
 union Slave{
     uint8 Trans;
     struct
@@ -44,19 +47,21 @@ int main()
     char value[20];
     PS2Controller psData;
     Line line;
-    CyGlobalIntEnable; /* Enable global interrupts. */
+    /* Enable global interrupts. */
+    CyGlobalIntEnable; 
     CyDelay(500);
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
-    Motor_PWM_a_Start();
-    Motor_PWM_b_Start();
+    PWM_Motor_a_Start();
+    PWM_Motor_b_Start();    
+    Motor_Right(0);
+    Motor_Left(0);
     //PS2_Start();
     
     UART_Line_Sensor_Start();
     I2C_1_Start();
     I2C_LCD_1_Start();
     I2C_LCD_Init();
-    Motor_Right(0);
-    Motor_Left(0);
+
 
     CyDelay(1000);
     I2C_LCD_Position(0u,0u);
@@ -73,20 +78,25 @@ int main()
             UART_Line_Sensor_PutString(value);
         }
         
-        if((line.slave.status.d == 0) && (line.slave.status.e == 0))
+        if(line.slave.status.e == BLACK)//直進
         {
-            Motor_Right(200);
-            Motor_Left(200);
+            Motor_Right(150);
+            Motor_Left(150);
         }
-        else if((line.slave.status.d == 1) && (line.slave.status.e == 0))
+        else if(line.slave.status.d == BLACK)//右折
         {
-            Motor_Right(200);
-            Motor_Left(50);
+            Motor_Right(0);
+            Motor_Left(150);
         }
-        else if((line.slave.status.d == 0) && (line.slave.status.e == 0))
+        else if(line.slave.status.f == BLACK)//左折
         {
-            Motor_Right(50);
-            Motor_Left(200);
+            Motor_Right(150);
+            Motor_Left(0);
+        }
+        else
+        {
+            Motor_Right(150);
+            Motor_Left(150);           
         }
         /*
         psData = PS2_Controller_get();
@@ -124,18 +134,18 @@ void Motor_Right(int16 speed){
     
     if((0<speed)&&(speed<255))
     {
-        Motor_PWM_a_WriteCompare1(0);
-        Motor_PWM_a_WriteCompare2(speed);   
+        PWM_Motor_a_WriteCompare1(0);
+        PWM_Motor_a_WriteCompare2(speed);   
     }
     else if((-255<speed)&&(speed<0))
     {
-        Motor_PWM_a_WriteCompare1(-speed);
-        Motor_PWM_a_WriteCompare2(0);
+        PWM_Motor_a_WriteCompare1(-speed);
+        PWM_Motor_a_WriteCompare2(0);
     }
     else
     {
-        Motor_PWM_a_WriteCompare1(0);
-        Motor_PWM_a_WriteCompare2(0);
+        PWM_Motor_a_WriteCompare1(0);
+        PWM_Motor_a_WriteCompare2(0);
     }
 }
 
@@ -144,18 +154,18 @@ void Motor_Left(int16 speed){
     
     if((0<speed)&&(speed<255))
     {
-        Motor_PWM_b_WriteCompare1(0);
-        Motor_PWM_b_WriteCompare2(speed);   
+        PWM_Motor_b_WriteCompare1(0);
+        PWM_Motor_b_WriteCompare2(speed);   
     }
     else if((-255<speed)&&(speed<0))
     {
-        Motor_PWM_b_WriteCompare1(-speed);
-        Motor_PWM_b_WriteCompare2(0);
+        PWM_Motor_b_WriteCompare1(-speed);
+        PWM_Motor_b_WriteCompare2(0);
     }
     else
     {
-        Motor_PWM_b_WriteCompare1(0);
-        Motor_PWM_b_WriteCompare2(0);
+        PWM_Motor_b_WriteCompare1(0);
+        PWM_Motor_b_WriteCompare2(0);
     }
 }
 
