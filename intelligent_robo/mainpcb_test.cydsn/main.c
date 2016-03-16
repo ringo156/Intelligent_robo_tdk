@@ -69,7 +69,7 @@ int main()
         if(UART_Line_Sensor_GetRxBufferSize())
         {
             line.slave.Trans = (uint8)UART_Line_Sensor_GetChar();
-            sprintf(value, "d=%d e=%d\n", line.slave.status.d, line.slave.status.e);
+            sprintf(value, "d=%d e=%d f=%d\n", line.slave.status.d, line.slave.status.e, line.slave.status.f);
             UART_Line_Sensor_PutString(value);
         }
         
@@ -88,16 +88,13 @@ int main()
             Motor_Right(50);
             Motor_Left(200);
         }
-        
-        
+        /*
         psData = PS2_Controller_get();
-        
         if(psData.UP)
         {
             Motor_Right(200);
             Motor_Left(200);
         }
-
         else if(psData.DOWN)
         {
             Motor_Right(-150);
@@ -118,6 +115,7 @@ int main()
             Motor_Right(0);
             Motor_Left(0);
         }
+        */
     }
 }
 

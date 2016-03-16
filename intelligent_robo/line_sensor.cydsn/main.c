@@ -48,7 +48,8 @@ int main()
     uint32 gray[8] = {};
     uint32 min[8]  = {};
     uint32 max[8]  = {};
-    uint32 x[8]    = {150,150,170,180,150,150,150,150};
+    uint32 x[8]    = {180,180,180,200,150,150,170,170};
+                     //a
     uint8 i,tx=0;
     char value[40];
     //Line line;
@@ -99,10 +100,10 @@ int main()
                 //中間値の計算
                 gray[i] = (max[i] + min[i])/2;
                 */
-                if(fx[i]<200)//black
+                if(fx[i]<x[i])//black
                 {
-                    tx |= 1 << i;
                     //iビット目を1にする
+                    tx |= 1 << i;
                 }
                 else//white
                 {
@@ -114,15 +115,16 @@ int main()
                 //UART_2_UartPutString(value);
             }
             
-            //UART_2_UartPutChar(tx);
+            UART_2_UartPutChar(tx);
             
+            /*
             //デバッグ
             for(i=0;i<8;i++)
             {
                 sprintf(value, "%d=%lu x=%d\n", i,val[i],tx);            
                 UART_2_UartPutString(value);
             }
-            
+            */
             g_timeerFlag = 0;
         }
     }
