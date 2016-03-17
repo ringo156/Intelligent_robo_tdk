@@ -43,7 +43,8 @@ void Motor_Left(int16 speed);
 
 int main()
 {
-    uint16 x=0, i=0;
+    uint8 i = 0, sensor[3] = {};
+    uint16 x=0;
     char value[20];
     PS2Controller psData;
     Line line;
@@ -58,7 +59,9 @@ int main()
     Motor_Right(0);
     Motor_Left(0);
     //PS2_Start();
-    
+    ADC_DelSig_Distance_Start();
+    ADC_DelSig_Distance_StartConvert();
+    AMux_D_Sensor_Start();
     UART_Line_Sensor_Start();
     I2C_1_Start();
     I2C_LCD_1_Start();
@@ -71,6 +74,7 @@ int main()
     {
         Debug_LED_Write(1);
         /* Place your application code here. */
+        /*
         //ラインセンサ受信
         if(UART_Line_Sensor_GetRxBufferSize())
         {
@@ -99,6 +103,7 @@ int main()
             Motor_Right(150);
             Motor_Left(150);           
         }
+        */
         /*
         psData = PS2_Controller_get();
         if(psData.UP)
@@ -127,6 +132,21 @@ int main()
             Motor_Left(0);
         }
         */
+        //距離センサー
+        for(i=0;i<3;i++)
+        {
+            AMux_D_Sensor_Select(i);
+            ADC_DelSig_Distance_StartConvert();
+            ADC_DelSig_Distance_IsEndConversion(ADC_DelSig_Distance_WAIT_FOR_RESULT);
+            sensor[i] = ADC_DelSig_Distance_GetResult8();
+            ADC_DelSig_Distance_StopConvert();
+        }
+        i = 0;
+        sprintf(value, "%d=%d", i, sensor[i]);
+        I2C_LCD_Position(1u,0u);
+        I2C_LCD_1_PrintString(value);
+        
+            
     }
 }
 
