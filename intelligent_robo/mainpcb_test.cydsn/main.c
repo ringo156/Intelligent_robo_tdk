@@ -44,7 +44,9 @@ void Motor_Left(int16 speed);
 
 int main()
 {
+    const uint8 speed = 170;
     uint8 s = 0, i = 0, sensor[3] = {};
+    uint8 AreaFlag = 0, aFlag = 0, hFlag = 0;
     uint16 x=0;
     double p = 0, p0 = 0, p1 = 0, p2 = 0, dif = 0;
     char value[20];
@@ -72,10 +74,10 @@ int main()
     CyDelay(1000);
     I2C_LCD_Position(0u,0u);
     I2C_LCD_1_PrintString("PSoC5 Start");
-    CyDelay(2000);
-    Motor_Right(150);
-    Motor_Left(150);
-    CyDelay(1800);
+    CyDelay(1000);
+    Motor_Right(speed);
+    Motor_Left(speed);
+    CyDelay(800);
     I2C_LCD_1_Clear();
     for(;;)
     {
@@ -86,35 +88,43 @@ int main()
         if(UART_Line_Sensor_GetRxBufferSize())
         {
             line.slave.Trans = (uint8)UART_Line_Sensor_GetChar();
+            
             //sprintf(value, "d=%d e=%d f=%d\n", line.slave.status.d, line.slave.status.e, line.slave.status.f);
             //UART_Line_Sensor_PutString(value);
         }
-        p = (double)(line.slave.status.h*(-3)+line.slave.status.g*(-2)+line.slave.status.f*(-1)+line.slave.status.e*(0)+
-        line.slave.status.d*(1)+line.slave.status.c*(2)+line.slave.status.b*(3)+line.slave.status.a*(4));
+        
+        
+        p = (double)(line.slave.status.h*(-4)+line.slave.status.g*(-3)+line.slave.status.f*(-2)+line.slave.status.e*(-1)+
+        line.slave.status.d*(0)+line.slave.status.c*(1)+line.slave.status.b*(2)+line.slave.status.a*(3));
         s = line.slave.status.h + line.slave.status.g + line.slave.status.f + line.slave.status.e + 
         line.slave.status.d + line.slave.status.c + line.slave.status.b + line.slave.status.a;
+        /*
+        p = (double)(line.slave.status.g*(-3)+line.slave.status.f*(-2)+line.slave.status.e*(-1)+
+        line.slave.status.d*(0)+line.slave.status.c*(1)+line.slave.status.b*(2));
+        s = line.slave.status.g + line.slave.status.f + line.slave.status.e + 
+        line.slave.status.d + line.slave.status.c + line.slave.status.b;
+        */
         if(s!=0)
         {
             p/=(double)s;
             p2 = p1;
             p1 = p0;
             p0 = p;
-            //p=15, i= , d=
-            dif += 19.0 * (p0-p1) + 0.07 * p0 + 1.5 *((p0-p1) - (p1-p2));
-            if(dif > 150.0)
+            //p=15, i= , d=,
+            //dif += 16.0 * (p0-p1) + 0.4 * p0 + 1.7 *((p0-p1) - (p1-p2));
+            dif += 14.0 * (p0-p1) + 4.0 *((p0-p1) - (p1-p2));
+            if(dif > speed)
             {
-                dif = 150.0;
+                dif = speed;
             }
-            else if(dif < -150)
+            else if(dif < -speed)
             {
-                dif = -150.0;
+                dif = -speed;
             }
-            Motor_Right(150 - (int)dif);
-            Motor_Left(150 + (int)dif);
+            Motor_Right(speed - (int)dif);
+            Motor_Left(speed + (int)dif);
             
-            sprintf(value, "dif = %d", (int)dif);
-            I2C_LCD_Position(0u,0u);
-            I2C_LCD_1_PrintString(value);            
+           
             if(dif>0)
             {
                 I2C_LCD_Position(1u,7u);
@@ -125,8 +135,10 @@ int main()
                 I2C_LCD_Position(1u,7u);
                 I2C_LCD_1_PrintString("left");
             }
-            
         }
+        sprintf(value, "dif=%f",dif);
+        I2C_LCD_Position(1u,0u);
+        I2C_LCD_1_PrintString(value);
         /*
         if(line.slave.status.e == BLACK)//直進
         {
@@ -186,10 +198,12 @@ int main()
             sensor[i] = ADC_DelSig_Distance_GetResult8();
             ADC_DelSig_Distance_StopConvert();
         }
+        /*
         i = 0;
         sprintf(value, "%d=%d", i, sensor[i]);
         I2C_LCD_Position(1u,0u);
         I2C_LCD_1_PrintString(value);
+        */
         if((sensor[1]>150)&&(sensor[1]<180))
         {
             for(;;)

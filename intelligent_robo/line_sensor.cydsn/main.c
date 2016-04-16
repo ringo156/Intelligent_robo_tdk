@@ -15,6 +15,8 @@
 #define BLACK   1
 #define WHITE   0
 
+
+
 uint8 g_timeerFlag = 0;
 
 union Slave{
@@ -44,11 +46,12 @@ CY_ISR(UART_isr)
 int main()
 {
     uint32 val[8]  = {};
-    uint32 min[8]  = {130,100,130,180,160,170,140,130};
-    uint32 max[8]  = {150,130,160,190,180,190,160,160};
+    uint32 min[8]  = {170,100,130,180,160,170,140,130};
+    uint32 max[8]  = {190,130,160,200,180,190,160,160};
                      //a ~~~ h
     uint8 i,tx=0;
     char value[40];
+    uint8 x[8];
     //Line line;
     
     CyGlobalIntEnable; /* Enable global interrupts. */
@@ -86,14 +89,15 @@ int main()
                     //iビット目を0にする
                 }
             }
-            
+         
             UART_2_UartPutChar(tx);
+            //UART_2_SpiUartPutArray(x,8);
             
             /*
             //デバッグ
             for(i=0;i<8;i++)
             { 
-            i = 2;
+            //i = 2;
                 sprintf(value, "%d=%lu x=%d\n", i,val[i],tx);            
                 UART_2_UartPutString(value);
             }
