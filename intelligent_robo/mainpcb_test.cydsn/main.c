@@ -44,7 +44,7 @@ void Motor_Left(int16 speed);
 
 int main()
 {
-    const uint8 speed = 220;
+    const uint8 speed = 200;
     uint8 s = 0, i = 0, sensor[3] = {};
     uint8 AreaFlag = 0, aFlag = 0, hFlag = 0;
     uint16 x=0;
@@ -94,8 +94,8 @@ int main()
         }
         
         
-        p = (double)(line.slave.status.h*(-4)+line.slave.status.g*(-3)+line.slave.status.f*(-2)+line.slave.status.e*(-1)+
-        line.slave.status.d*(0)+line.slave.status.c*(1)+line.slave.status.b*(2)+line.slave.status.a*(3));
+        p = (double)(line.slave.status.h*(-3)+line.slave.status.g*(-2)+line.slave.status.f*(-1)+line.slave.status.e*(0)+
+        line.slave.status.d*(1)+line.slave.status.c*(2)+line.slave.status.b*(3)+line.slave.status.a*(4));
         s = line.slave.status.h + line.slave.status.g + line.slave.status.f + line.slave.status.e + 
         line.slave.status.d + line.slave.status.c + line.slave.status.b + line.slave.status.a;
         
@@ -105,8 +105,7 @@ int main()
             p2 = p1;
             p1 = p0;
             p0 = p;
-            dif += 17 * (p0-p1);
-            //dif += 16.1 * (p0-p1);//speed=200のとき
+            dif += 16.1 * (p0-p1);//speed=200のとき
             //dif += 16.5 * (p0-p1) + 0.15 * p0 + 3.3 *((p0-p1) - (p1-p2));
             if(dif > speed)
             {
