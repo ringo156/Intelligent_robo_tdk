@@ -88,12 +88,8 @@ int main()
         if(UART_Line_Sensor_GetRxBufferSize())
         {
             line.slave.Trans = (uint8)UART_Line_Sensor_GetChar();
-            
-            //sprintf(value, "d=%d e=%d f=%d\n", line.slave.status.d, line.slave.status.e, line.slave.status.f);
-            //UART_Line_Sensor_PutString(value);
         }
-        
-        
+         
         p = (double)(line.slave.status.h*(-3)+line.slave.status.g*(-2)+line.slave.status.f*(-1)+line.slave.status.e*(0)+
         line.slave.status.d*(1)+line.slave.status.c*(2)+line.slave.status.b*(3)+line.slave.status.a*(4));
         s = line.slave.status.h + line.slave.status.g + line.slave.status.f + line.slave.status.e + 
@@ -130,59 +126,35 @@ int main()
                 I2C_LCD_1_PrintString("left");
             }
         }
-        sprintf(value, "dif=%f",dif);
+
+        //ライン読む
+        if(line.slave.status.a==1)
+        {
+            aFlag = 1;
+        }
+        if(line.slave.status.h==1)
+        {
+            hFlag = 1;
+        }
+        if((aFlag == 1)&&(hFlag == 1))
+        {
+            AreaFlag++;
+            aFlag = 0;
+            hFlag = 0;    
+            if(AreaFlag == 4)
+            {
+                Motor_Right(0);
+                Motor_Left(0);
+                sprintf(value, "Area=%d",AreaFlag);
+                I2C_LCD_Position(1u,0u);
+                I2C_LCD_1_PrintString(value);
+                for(;;);
+            }
+            CyDelay(150);
+        }
+        sprintf(value, "Area=%d",AreaFlag);
         I2C_LCD_Position(1u,0u);
         I2C_LCD_1_PrintString(value);
-        /*
-        if(line.slave.status.e == BLACK)//直進
-        {
-            Motor_Right(150);
-            Motor_Left(150);
-        }
-        else if(line.slave.status.d == BLACK)//右折
-        {
-            Motor_Right(0);
-            Motor_Left(150);
-        }
-        else if(line.slave.status.f == BLACK)//左折
-        {
-            Motor_Right(150);
-            Motor_Left(0);
-        }
-        else
-        {
-            Motor_Right(150);
-            Motor_Left(150);           
-        }
-        */
-        /*
-        psData = PS2_Controller_get();
-        if(psData.UP)
-        {
-            Motor_Right(200);
-            Motor_Left(200);
-        }
-        else if(psData.DOWN)
-        {
-            Motor_Right(-150);
-            Motor_Left(-150);
-        }
-        else if(psData.LEFT)
-        {
-            Motor_Right(200);
-            Motor_Left(0);
-        }
-        else if(psData.RIGHT)
-        {
-            Motor_Right(0);
-            Motor_Left(200);
-        }
-        else
-        {
-            Motor_Right(0);
-            Motor_Left(0);
-        }
-        */
         //距離センサー
         for(i=0;i<3;i++)
         {
@@ -192,12 +164,7 @@ int main()
             sensor[i] = ADC_DelSig_Distance_GetResult8();
             ADC_DelSig_Distance_StopConvert();
         }
-        /*
-        i = 0;
-        sprintf(value, "%d=%d", i, sensor[i]);
-        I2C_LCD_Position(1u,0u);
-        I2C_LCD_1_PrintString(value);
-        */
+
         if((sensor[1]>150)&&(sensor[1]<180))
         {
             for(;;)
@@ -210,7 +177,6 @@ int main()
 }
 
 void Motor_Right(int16 speed){
-    
     
     if((0<speed)&&(speed<255))
     {
@@ -230,7 +196,6 @@ void Motor_Right(int16 speed){
 }
 
 void Motor_Left(int16 speed){
-    
     
     if((0<speed)&&(speed<255))
     {
